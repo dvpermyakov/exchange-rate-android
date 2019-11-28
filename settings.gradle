@@ -1,1 +1,2 @@
+include ":rate-list"
 include ":launcher"
