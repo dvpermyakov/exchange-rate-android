@@ -5,8 +5,9 @@ data class RateListState(
 ) {
     data class RateItem(
         val id: Int,
-        val image: Int,
+        val image: String,
         val code: String,
-        val name: String
+        val name: String,
+        val value: Float
     )
 }

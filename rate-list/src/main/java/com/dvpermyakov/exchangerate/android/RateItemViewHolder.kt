@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.dvpermyakov.exchangerate.R
 import com.dvpermyakov.exchangerate.presentation.RateListState
+import com.squareup.picasso.Picasso
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_rate.*
 
@@ -26,7 +27,11 @@ class RateItemViewHolder(
         containerViewGroup.setOnClickListener {
             listener.onRateItemClick(item.id)
         }
-        imageView.setImageResource(item.image)
+        if (item.image.isNotBlank()) {
+            Picasso.get()
+                .load(item.image)
+                .into(imageView)
+        }
         codeView.text = item.code
         nameView.text = item.name
     }

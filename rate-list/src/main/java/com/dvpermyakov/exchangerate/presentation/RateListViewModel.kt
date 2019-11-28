@@ -3,9 +3,12 @@ package com.dvpermyakov.exchangerate.presentation
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.dvpermyakov.exchangerate.interactions.GetRateList
 import javax.inject.Inject
 
-class RateListViewModel @Inject constructor() : ViewModel() {
+class RateListViewModel @Inject constructor(
+    getRateList: GetRateList
+) : ViewModel() {
 
     private val rateListStateMutableLiveData = MutableLiveData<RateListState>()
 
@@ -15,30 +18,27 @@ class RateListViewModel @Inject constructor() : ViewModel() {
         }
 
     init {
-        rateListStateMutableLiveData.value = RateListState(
-            items = listOf(
-                RateListState.RateItem(
-                    id = 1,
-                    image = 0,
-                    code = "RUR",
-                    name = "Рубль"
-                ),
-                RateListState.RateItem(
-                    id = 2,
-                    image = 0,
-                    code = "RUR",
-                    name = "Рубль"
-                ),
-                RateListState.RateItem(
-                    id = 3,
-                    image = 0,
-                    code = "RUR",
-                    name = "Рубль"
+        when (val result = getRateList.invoke()) {
+            is GetRateList.Result.Success -> {
+                rateListStateMutableLiveData.value = RateListState(
+                    items = result.items.map { item ->
+                        mapRateItem(item)
+                    }
                 )
-            )
-        )
+            }
+        }
     }
 
     fun onRateItemClick(rateId: Int) {
+    }
+
+    private fun mapRateItem(item: GetRateList.Result.Success.RateItem): RateListState.RateItem {
+        return RateListState.RateItem(
+            id = item.id,
+            image = item.image,
+            name = item.name,
+            code = item.code,
+            value = item.value
+        )
     }
 }
