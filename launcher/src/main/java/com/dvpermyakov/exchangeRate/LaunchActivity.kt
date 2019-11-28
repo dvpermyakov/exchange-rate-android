@@ -2,7 +2,7 @@ package com.dvpermyakov.exchangeRate
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.dvpermyakov.exchangerate.RateListFragment
+import com.dvpermyakov.exchangerate.android.RateListFragment
 
 class LaunchActivity : AppCompatActivity() {
 
