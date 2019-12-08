@@ -43,6 +43,6 @@ class RateItemViewHolder(
     }
 
     interface RateListListener {
-        fun onRateItemClick(rateId: Int)
+        fun onRateItemClick(rateId: String)
     }
 }

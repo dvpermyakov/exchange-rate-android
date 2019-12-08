@@ -42,7 +42,7 @@ class RateListViewModel @Inject constructor(
                             rateListStateMutableLiveData.postValue(RateListState(
                                 items = result.items.map { item ->
                                     RateListState.RateItem(
-                                        id = item.id,
+                                        id = item.code.toString(),
                                         image = item.image,
                                         name = item.name,
                                         code = item.code.toString(),
@@ -61,6 +61,6 @@ class RateListViewModel @Inject constructor(
         job.cancel()
     }
 
-    fun onRateItemClick(rateId: Int) {
+    fun onRateItemClick(rateId: String) {
     }
 }

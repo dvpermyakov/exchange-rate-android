@@ -4,7 +4,7 @@ data class RateListState(
     val items: List<RateItem>
 ) {
     data class RateItem(
-        val id: Int,
+        val id: String,
         val image: String,
         val code: String,
         val name: String,

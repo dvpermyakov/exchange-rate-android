@@ -22,19 +22,19 @@ class GetRateListSubscription @Inject constructor(
                 Result.Empty
             } else {
                 Result.Success(
-                    items = currencyList.map { currency ->
-                        Result.Success.RateItem(
-                            id = currency.id,
-                            image = currency.image,
-                            code = currency.code,
-                            name = currency.name,
-                            value = if (userValue.code == currency.code) {
-                                userValue.value
-                            } else {
-                                exchangeRateList.findValue(userValue.value, currency.code)
-                            }
-                        )
-                    }
+                    items = currencyList
+                        .map { currency ->
+                            Result.Success.RateItem(
+                                image = currency.image,
+                                code = currency.code,
+                                name = currency.name,
+                                value = if (userValue.code == currency.code) {
+                                    userValue.value
+                                } else {
+                                    exchangeRateList.findValue(userValue.value, currency.code)
+                                }
+                            )
+                        }
                 )
             })
 
@@ -53,7 +53,6 @@ class GetRateListSubscription @Inject constructor(
             val items: List<RateItem>
         ) : Result() {
             data class RateItem(
-                val id: Int,
                 val image: String,
                 val code: CurrencyCode,
                 val name: String,
