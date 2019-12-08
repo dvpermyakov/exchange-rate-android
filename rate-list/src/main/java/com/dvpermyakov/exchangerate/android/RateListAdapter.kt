@@ -22,6 +22,18 @@ class RateListAdapter(
         }
     }
 
+    override fun onBindViewHolder(
+        holder: RecyclerView.ViewHolder,
+        position: Int,
+        payloads: MutableList<Any>
+    ) {
+        (payloads.firstOrNull() as? DiffItemCallback.Payload)?.let { payload ->
+            (holder as RateItemViewHolder).setValue(payload.value)
+        } ?: run {
+            super.onBindViewHolder(holder, position, payloads)
+        }
+    }
+
     private class DiffItemCallback : DiffUtil.ItemCallback<RateListState.RateItem>() {
 
         override fun areItemsTheSame(
@@ -37,5 +49,20 @@ class RateListAdapter(
         ): Boolean {
             return oldItem == newItem
         }
+
+        override fun getChangePayload(
+            oldItem: RateListState.RateItem,
+            newItem: RateListState.RateItem
+        ): Any? {
+            return if (oldItem.code == newItem.code && oldItem.name == newItem.name && oldItem.image == newItem.image) {
+                Payload(newItem.value)
+            } else {
+                null
+            }
+        }
+
+        data class Payload(
+            val value: String
+        )
     }
 }

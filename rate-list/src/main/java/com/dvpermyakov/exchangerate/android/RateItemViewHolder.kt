@@ -38,6 +38,10 @@ class RateItemViewHolder(
         valueEditTextView.setText(item.value)
     }
 
+    fun setValue(value: String) {
+        valueEditTextView.setText(value)
+    }
+
     interface RateListListener {
         fun onRateItemClick(rateId: Int)
     }
