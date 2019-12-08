@@ -25,7 +25,7 @@ class RateItemViewHolder(
 
     fun bind(item: RateListState.RateItem) {
         containerViewGroup.setOnClickListener {
-            listener.onRateItemClick(item.id)
+            listener.onRateItemClick(item.id, valueEditTextView.text.toString())
         }
         if (item.image.isNotBlank()) {
             Picasso.get()
@@ -43,6 +43,6 @@ class RateItemViewHolder(
     }
 
     interface RateListListener {
-        fun onRateItemClick(rateId: String)
+        fun onRateItemClick(rateId: String, value: String)
     }
 }

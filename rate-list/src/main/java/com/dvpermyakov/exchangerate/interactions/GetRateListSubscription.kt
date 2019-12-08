@@ -16,26 +16,36 @@ class GetRateListSubscription @Inject constructor(
 
             val userValue = userInputValueRepository.getValue()
             val currencyList = currencyRepository.getCurrencyList()
-            val exchangeRateList = exchangeRateRepository.getExchangeRateList(FROM_CODE_BASE)
+            val exchangeRateList = exchangeRateRepository.getExchangeRateList(
+                fromCode = userValue.code.toString()
+            )
 
             emit(if (currencyList.isEmpty() || exchangeRateList.isEmpty()) {
                 Result.Empty
             } else {
-                Result.Success(
-                    items = currencyList
-                        .map { currency ->
-                            Result.Success.RateItem(
-                                image = currency.image,
-                                code = currency.code,
-                                name = currency.name,
-                                value = if (userValue.code == currency.code) {
-                                    userValue.value
-                                } else {
-                                    exchangeRateList.findValue(userValue.value, currency.code)
-                                }
-                            )
-                        }
-                )
+                val items = currencyList
+                    .map { currency ->
+                        Result.Success.RateItem(
+                            image = currency.image,
+                            code = currency.code,
+                            name = currency.name,
+                            value = if (userValue.code == currency.code) {
+                                userValue.value
+                            } else {
+                                exchangeRateList.findValue(userValue.value, currency.code)
+                            }
+                        )
+                    }
+
+                val selectedRateItem: Result.Success.RateItem = items.first { rateItem ->
+                    rateItem.code == userValue.code
+                }
+
+                val mutableItems = items.toMutableList()
+                mutableItems.remove(selectedRateItem)
+                mutableItems.add(0, selectedRateItem)
+
+                Result.Success(items = mutableItems)
             })
 
             delay(1000)
@@ -61,9 +71,5 @@ class GetRateListSubscription @Inject constructor(
         }
 
         object Empty : Result()
-    }
-
-    companion object {
-        private const val FROM_CODE_BASE = "EUR"
     }
 }

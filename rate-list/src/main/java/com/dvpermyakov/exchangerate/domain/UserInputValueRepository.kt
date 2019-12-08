@@ -1,5 +1,6 @@
 package com.dvpermyakov.exchangerate.domain
 
 interface UserInputValueRepository {
-    fun getValue(): UserInputValueEntity
+    suspend fun getValue(): UserInputValueEntity
+    suspend fun setValue(value: UserInputValueEntity)
 }

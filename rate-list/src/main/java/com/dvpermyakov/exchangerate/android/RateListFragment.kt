@@ -21,8 +21,8 @@ class RateListFragment : Fragment() {
 
     private val adapter by lazy {
         RateListAdapter(object : RateItemViewHolder.RateListListener {
-            override fun onRateItemClick(rateId: String) {
-                viewModel.onRateItemClick(rateId)
+            override fun onRateItemClick(rateId: String, value: String) {
+                viewModel.onRateItemClick(rateId, value)
             }
         })
     }
@@ -52,6 +52,14 @@ class RateListFragment : Fragment() {
                 progressBarView.visibility = View.GONE
             }
         })
+
+        viewModel.scrollToFirstPositionLiveData.observe(
+            viewLifecycleOwner,
+            Observer { forceScroll ->
+                if (forceScroll) {
+                    recyclerView.smoothScrollToPosition(0)
+                }
+            })
     }
 
     companion object {
