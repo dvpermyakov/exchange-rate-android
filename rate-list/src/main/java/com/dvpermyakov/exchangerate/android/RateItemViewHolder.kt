@@ -34,6 +34,8 @@ class RateItemViewHolder(
         }
         codeView.text = item.code
         nameView.text = item.name
+
+        valueEditTextView.setText(item.value)
     }
 
     interface RateListListener {

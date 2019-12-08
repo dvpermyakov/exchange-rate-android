@@ -3,42 +3,61 @@ package com.dvpermyakov.exchangerate.presentation
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.dvpermyakov.exchangerate.interactions.GetRateList
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class RateListViewModel @Inject constructor(
-    getRateList: GetRateList
+    private val getRateList: GetRateList
 ) : ViewModel() {
 
+    private val job = SupervisorJob()
+    private val ioScope = CoroutineScope(job + Dispatchers.IO)
+
     private val rateListStateMutableLiveData = MutableLiveData<RateListState>()
+    private val progressBarMutableLiveData = MutableLiveData<Boolean>()
 
     val rateListStateLiveData: LiveData<RateListState>
-        get() {
-            return rateListStateMutableLiveData
-        }
+        get() = rateListStateMutableLiveData
+
+    val progressBarLiveData: LiveData<Boolean>
+        get() = progressBarMutableLiveData
 
     init {
-        when (val result = getRateList.invoke()) {
-            is GetRateList.Result.Success -> {
-                rateListStateMutableLiveData.value = RateListState(
-                    items = result.items.map { item ->
-                        mapRateItem(item)
+        viewModelScope.launch {
+            progressBarMutableLiveData.postValue(true)
+        }
+
+        ioScope.launch {
+            when (val result = getRateList.invoke()) {
+                is GetRateList.Result.Success -> {
+                    viewModelScope.launch {
+                        progressBarMutableLiveData.postValue(false)
+                        rateListStateMutableLiveData.postValue(RateListState(
+                            items = result.items.map { item ->
+                                RateListState.RateItem(
+                                    id = item.id,
+                                    image = item.image,
+                                    name = item.name,
+                                    code = item.code.toString(),
+                                    value = String.format("%.2f", item.value)
+                                )
+                            }
+                        ))
                     }
-                )
+                }
             }
         }
     }
 
-    fun onRateItemClick(rateId: Int) {
+    override fun onCleared() {
+        job.cancel()
     }
 
-    private fun mapRateItem(item: GetRateList.Result.Success.RateItem): RateListState.RateItem {
-        return RateListState.RateItem(
-            id = item.id,
-            image = item.image,
-            name = item.name,
-            code = item.code,
-            value = item.value
-        )
+    fun onRateItemClick(rateId: Int) {
     }
 }

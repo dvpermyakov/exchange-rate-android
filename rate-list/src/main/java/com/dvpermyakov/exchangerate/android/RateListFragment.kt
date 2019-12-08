@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.fragment_rate_list.*
 
 class RateListFragment : Fragment() {
 
-    private val viewModel by lazy {
+    private val viewModel: RateListViewModel by lazy {
         ViewModelProviders.of(this, RateListViewModelFactory()).get(RateListViewModel::class.java)
     }
 
@@ -43,6 +43,14 @@ class RateListFragment : Fragment() {
 
         viewModel.rateListStateLiveData.observe(viewLifecycleOwner, Observer { viewState ->
             adapter.submitList(viewState.items)
+        })
+
+        viewModel.progressBarLiveData.observe(viewLifecycleOwner, Observer { isProgressState ->
+            if (isProgressState) {
+                progressBarView.visibility = View.VISIBLE
+            } else {
+                progressBarView.visibility = View.GONE
+            }
         })
     }
 

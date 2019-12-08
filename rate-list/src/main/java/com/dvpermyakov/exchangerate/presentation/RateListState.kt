@@ -8,6 +8,6 @@ data class RateListState(
         val image: String,
         val code: String,
         val name: String,
-        val value: Float
+        val value: String
     )
 }
