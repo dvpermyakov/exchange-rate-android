@@ -4,15 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dvpermyakov.exchangerate.interactions.GetRateList
+import com.dvpermyakov.exchangerate.interactions.GetRateListSubscription
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class RateListViewModel @Inject constructor(
-    private val getRateList: GetRateList
+    private val getRateListSubscription: GetRateListSubscription
 ) : ViewModel() {
 
     private val job = SupervisorJob()
@@ -33,21 +34,23 @@ class RateListViewModel @Inject constructor(
         }
 
         ioScope.launch {
-            when (val result = getRateList.invoke()) {
-                is GetRateList.Result.Success -> {
-                    viewModelScope.launch {
-                        progressBarMutableLiveData.postValue(false)
-                        rateListStateMutableLiveData.postValue(RateListState(
-                            items = result.items.map { item ->
-                                RateListState.RateItem(
-                                    id = item.id,
-                                    image = item.image,
-                                    name = item.name,
-                                    code = item.code.toString(),
-                                    value = String.format("%.2f", item.value)
-                                )
-                            }
-                        ))
+            getRateListSubscription.invoke().collect { result ->
+                when (result) {
+                    is GetRateListSubscription.Result.Success -> {
+                        viewModelScope.launch {
+                            progressBarMutableLiveData.postValue(false)
+                            rateListStateMutableLiveData.postValue(RateListState(
+                                items = result.items.map { item ->
+                                    RateListState.RateItem(
+                                        id = item.id,
+                                        image = item.image,
+                                        name = item.name,
+                                        code = item.code.toString(),
+                                        value = String.format("%.2f", item.value)
+                                    )
+                                }
+                            ))
+                        }
                     }
                 }
             }
