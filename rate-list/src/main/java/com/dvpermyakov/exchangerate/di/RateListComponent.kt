@@ -18,6 +18,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 
+@ScreenScope
 @Component(modules = [RateListModule::class, NetworkModule::class])
 interface RateListComponent {
 
@@ -55,21 +56,25 @@ class NetworkModule {
 
 @Module
 class RateListModule {
+    @ScreenScope
     @Provides
     fun getUserInputValueRepository(): UserInputValueRepository {
         return UserInputValueRepositoryImpl()
     }
 
+    @ScreenScope
     @Provides
     fun getCurrencyRepository(): CurrencyRepository {
         return CurrencyRepositoryImpl()
     }
 
+    @ScreenScope
     @Provides
     fun getExchangeRateRepository(api: ExchangeRateApi): ExchangeRateRepository {
         return ExchangeRateRepositoryImpl(api)
     }
 
+    @ScreenScope
     @Provides
     fun getExchangeRateApi(retrofit: Retrofit): ExchangeRateApi {
         return retrofit.create(ExchangeRateApi::class.java)
