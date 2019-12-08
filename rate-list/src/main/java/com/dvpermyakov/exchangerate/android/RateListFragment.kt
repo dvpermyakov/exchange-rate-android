@@ -20,9 +20,13 @@ class RateListFragment : Fragment() {
     }
 
     private val adapter by lazy {
-        RateListAdapter(object : RateItemViewHolder.RateListListener {
+        RateListAdapter(object : RateListAdapter.Listener {
             override fun onRateItemClick(rateId: String, value: String) {
                 viewModel.onRateItemClick(rateId, value)
+            }
+
+            override fun onValueChange(value: String) {
+                viewModel.onValueChange(value)
             }
         })
     }

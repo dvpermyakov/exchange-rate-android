@@ -7,16 +7,37 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dvpermyakov.exchangerate.presentation.RateListState
 
 class RateListAdapter(
-    private val listener: RateItemViewHolder.RateListListener
+    private val listener: Listener
 ) : ListAdapter<RateListState.RateItem, RecyclerView.ViewHolder>(DiffItemCallback()) {
 
+    override fun getItemViewType(position: Int): Int {
+        return if (position == 0) {
+            VIEW_TYPE_EDITABLE
+        } else {
+            VIEW_TYPE_NOT_EDITABLE
+        }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return RateItemViewHolder(parent, listener)
+        return when (viewType) {
+            VIEW_TYPE_EDITABLE -> {
+                RateItemEditableViewHolder(parent, listener)
+            }
+            VIEW_TYPE_NOT_EDITABLE -> {
+                RateItemViewHolder(parent, listener)
+            }
+            else -> {
+                RateItemViewHolder(parent, listener)
+            }
+        }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is RateItemViewHolder -> {
+                holder.bind(getItem(position))
+            }
+            is RateItemEditableViewHolder -> {
                 holder.bind(getItem(position))
             }
         }
@@ -28,7 +49,13 @@ class RateListAdapter(
         payloads: MutableList<Any>
     ) {
         (payloads.firstOrNull() as? DiffItemCallback.Payload)?.let { payload ->
-            (holder as RateItemViewHolder).setValue(payload.value)
+            when (holder) {
+                is RateItemViewHolder -> {
+                    holder.setValue(payload.value)
+                }
+                is RateItemEditableViewHolder -> {
+                }
+            }
         } ?: run {
             super.onBindViewHolder(holder, position, payloads)
         }
@@ -64,5 +91,14 @@ class RateListAdapter(
         data class Payload(
             val value: String
         )
+    }
+
+    interface Listener :
+        RateItemViewHolder.RateListListener,
+        RateItemEditableViewHolder.EditableRateListListener
+
+    companion object {
+        private const val VIEW_TYPE_EDITABLE = 1
+        private const val VIEW_TYPE_NOT_EDITABLE = 2
     }
 }

@@ -50,6 +50,14 @@ class RateListViewModel @Inject constructor(
         job.cancel()
     }
 
+    fun onValueChange(value: String) {
+        ioScope.launch {
+            changeUserInputValue.invoke(
+                value = value.toFloat()
+            )
+        }
+    }
+
     fun onRateItemClick(rateId: String, value: String) {
         ioScope.launch {
             changeUserInputValue.invoke(

@@ -9,11 +9,17 @@ class ChangeUserInputValue @Inject constructor(
     private val userInputValueRepository: UserInputValueRepository
 ) {
     suspend fun invoke(currencyCode: CurrencyCode, value: Float) {
-        userInputValueRepository.setValue(
-            UserInputValueEntity(
-                code = currencyCode,
-                value = value
-            )
+        val userInput = UserInputValueEntity(
+            code = currencyCode,
+            value = value
         )
+        userInputValueRepository.setValue(userInput)
+    }
+
+    suspend fun invoke(value: Float) {
+        val userInput = userInputValueRepository.getValue().copy(
+            value = value
+        )
+        userInputValueRepository.setValue(userInput)
     }
 }
