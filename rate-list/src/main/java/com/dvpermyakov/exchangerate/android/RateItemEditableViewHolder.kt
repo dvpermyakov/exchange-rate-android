@@ -10,7 +10,7 @@ import com.dvpermyakov.exchangerate.R
 import com.dvpermyakov.exchangerate.presentation.RateListState
 import com.squareup.picasso.Picasso
 import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.main.item_rate.*
+import kotlinx.android.synthetic.main.item_rate_editable.*
 
 class RateItemEditableViewHolder(
     parent: ViewGroup,
@@ -36,14 +36,14 @@ class RateItemEditableViewHolder(
 
         valueEditTextView.setText(item.value)
         valueEditTextView.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {
+            override fun afterTextChanged(s: Editable?) {
             }
 
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                listener.onValueChange(p0!!.toString())
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                listener.onValueChange(s.toString())
             }
         })
     }

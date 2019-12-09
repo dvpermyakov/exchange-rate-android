@@ -44,6 +44,7 @@ class RateListFragment : Fragment() {
 
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context)
+        recyclerView.itemAnimator = null
 
         viewModel.rateListStateLiveData.observe(viewLifecycleOwner, Observer { viewState ->
             adapter.submitList(viewState.items)
@@ -61,7 +62,9 @@ class RateListFragment : Fragment() {
             viewLifecycleOwner,
             Observer { forceScroll ->
                 if (forceScroll) {
-                    recyclerView.smoothScrollToPosition(0)
+                    recyclerView.post {
+                        recyclerView.smoothScrollToPosition(0)
+                    }
                 }
             })
     }

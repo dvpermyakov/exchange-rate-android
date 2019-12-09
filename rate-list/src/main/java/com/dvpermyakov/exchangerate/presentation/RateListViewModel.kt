@@ -52,9 +52,17 @@ class RateListViewModel @Inject constructor(
 
     fun onValueChange(value: String) {
         ioScope.launch {
-            changeUserInputValue.invoke(
-                value = value.toFloat()
-            )
+            try {
+                changeUserInputValue.invoke(
+                    value = value.toFloat()
+                )
+            } catch (ignore: NumberFormatException) {
+                changeUserInputValue.invoke(value = 0f)
+            }
+        }
+        subscriptionJob?.cancel()
+        subscriptionJob = ioScope.launch {
+            subscribeToRateList(firstSuccessBlock = {})
         }
     }
 
@@ -77,25 +85,21 @@ class RateListViewModel @Inject constructor(
 
     private suspend inline fun subscribeToRateList(crossinline firstSuccessBlock: () -> Unit) {
         getRateListSubscription.invoke().collectIndexed { index, result ->
-            when (result) {
-                is GetRateListSubscription.Result.Success -> {
-                    if (index == 0) {
-                        firstSuccessBlock()
+            if (index == 0) {
+                firstSuccessBlock()
+            }
+            viewModelScope.launch {
+                rateListStateMutableLiveData.postValue(RateListState(
+                    items = result.items.map { item ->
+                        RateListState.RateItem(
+                            id = item.code.toString(),
+                            image = item.image,
+                            name = item.name,
+                            code = item.code.toString(),
+                            value = String.format("%.2f", item.value)
+                        )
                     }
-                    viewModelScope.launch {
-                        rateListStateMutableLiveData.postValue(RateListState(
-                            items = result.items.map { item ->
-                                RateListState.RateItem(
-                                    id = item.code.toString(),
-                                    image = item.image,
-                                    name = item.name,
-                                    code = item.code.toString(),
-                                    value = String.format("%.2f", item.value)
-                                )
-                            }
-                        ))
-                    }
-                }
+                ))
             }
         }
     }

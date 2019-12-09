@@ -1,5 +1,6 @@
 package com.dvpermyakov.exchangerate.interactions
 
+import com.dvpermyakov.exchangerate.data.ExchangeRateCollectionEntity
 import com.dvpermyakov.exchangerate.domain.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -9,23 +10,21 @@ import javax.inject.Inject
 class GetRateListSubscription @Inject constructor(
     private val userInputValueRepository: UserInputValueRepository,
     private val currencyRepository: CurrencyRepository,
-    private val exchangeRateGateway: ExchangeRateGateway
+    private val exchangeRateGateway: ExchangeRateGateway,
+    private val exchangeRateRepository: ExchangeRateRepository
 ) {
-    suspend fun invoke(): Flow<Result> = flow {
+    suspend fun invoke(): Flow<Value> = flow {
         while (true) {
 
             val userValue = userInputValueRepository.getValue()
             val currencyList = currencyRepository.getCurrencyList()
-            val exchangeRateList = exchangeRateGateway.getExchangeRateList(
-                fromCode = userValue.code.toString()
-            )
+            val exchangeRateCollection = exchangeRateRepository.getExchangeRateCollection()
+            val exchangeRateList = exchangeRateCollection?.list ?: emptyList()
 
-            emit(if (currencyList.isEmpty() || exchangeRateList.isEmpty()) {
-                Result.Empty
-            } else {
+            if (currencyList.isNotEmpty() && exchangeRateList.isNotEmpty()) {
                 val items = currencyList
                     .map { currency ->
-                        Result.Success.RateItem(
+                        Value.RateItem(
                             image = currency.image,
                             code = currency.code,
                             name = currency.name,
@@ -37,7 +36,7 @@ class GetRateListSubscription @Inject constructor(
                         )
                     }
 
-                val selectedRateItem: Result.Success.RateItem = items.first { rateItem ->
+                val selectedRateItem: Value.RateItem = items.first { rateItem ->
                     rateItem.code == userValue.code
                 }
 
@@ -45,8 +44,18 @@ class GetRateListSubscription @Inject constructor(
                 mutableItems.remove(selectedRateItem)
                 mutableItems.add(0, selectedRateItem)
 
-                Result.Success(items = mutableItems)
-            })
+                emit(Value(items = mutableItems))
+            }
+
+            val freshExchangeRateList = exchangeRateGateway.getExchangeRateList(
+                fromCode = userValue.code.toString()
+            )
+            exchangeRateRepository.saveExchangeRateCollection(
+                ExchangeRateCollectionEntity(
+                    fromCode = userValue.code,
+                    list = freshExchangeRateList
+                )
+            )
 
             delay(1000)
         }
@@ -58,18 +67,14 @@ class GetRateListSubscription @Inject constructor(
         }?.value ?: 0f) * value
     }
 
-    sealed class Result {
-        data class Success(
-            val items: List<RateItem>
-        ) : Result() {
-            data class RateItem(
-                val image: String,
-                val code: CurrencyCode,
-                val name: String,
-                val value: Float
-            )
-        }
-
-        object Empty : Result()
+    data class Value(
+        val items: List<RateItem>
+    ) {
+        data class RateItem(
+            val image: String,
+            val code: CurrencyCode,
+            val name: String,
+            val value: Float
+        )
     }
 }
