@@ -21,9 +21,9 @@ class GetRateListSubscription @Inject constructor(
             val userValue = userInputValueRepository.getValue()
             val currencyList = currencyRepository.getCurrencyList()
             val exchangeRateCollection = exchangeRateRepository.getExchangeRateCollection()
-            val exchangeRateList = exchangeRateCollection?.list ?: emptyList()
 
-            if (currencyList.isNotEmpty() && exchangeRateList.isNotEmpty()) {
+            if (currencyList.isNotEmpty() && exchangeRateCollection != null) {
+                val exchangeRateList = exchangeRateCollection.list
 
                 val items = currencyList
                     .map { currency ->
@@ -34,7 +34,17 @@ class GetRateListSubscription @Inject constructor(
                             value = if (userValue.code == currency.code) {
                                 userValue.value
                             } else {
-                                exchangeRateList.findValue(userValue.value, currency.code)
+                                if (exchangeRateCollection.fromCode != userValue.code) {
+                                    if (exchangeRateCollection.fromCode == currency.code) {
+                                        userValue.value / exchangeRateList.findValue(userValue.code)
+                                    } else {
+                                        exchangeRateList.findValue(currency.code) * userValue.value / exchangeRateList.findValue(
+                                            userValue.code
+                                        )
+                                    }
+                                } else {
+                                    exchangeRateList.findValue(currency.code) * userValue.value
+                                }
                             }
                         )
                     }
@@ -65,10 +75,8 @@ class GetRateListSubscription @Inject constructor(
         }
     }
 
-    private fun List<ExchangeRateEntity>.findValue(value: Float, toCode: CurrencyCode): Float {
-        return (find { exchangeRate ->
-            exchangeRate.toCode == toCode
-        }?.value ?: 0f) * value
+    private fun List<ExchangeRateEntity>.findValue(toCode: CurrencyCode): Float {
+        return find { exchangeRate -> exchangeRate.toCode == toCode }?.value ?: 0f
     }
 
     data class Value(
