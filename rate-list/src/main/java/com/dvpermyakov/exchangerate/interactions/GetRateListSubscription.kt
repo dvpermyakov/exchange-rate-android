@@ -9,14 +9,14 @@ import javax.inject.Inject
 class GetRateListSubscription @Inject constructor(
     private val userInputValueRepository: UserInputValueRepository,
     private val currencyRepository: CurrencyRepository,
-    private val exchangeRateRepository: ExchangeRateRepository
+    private val exchangeRateGateway: ExchangeRateGateway
 ) {
     suspend fun invoke(): Flow<Result> = flow {
         while (true) {
 
             val userValue = userInputValueRepository.getValue()
             val currencyList = currencyRepository.getCurrencyList()
-            val exchangeRateList = exchangeRateRepository.getExchangeRateList(
+            val exchangeRateList = exchangeRateGateway.getExchangeRateList(
                 fromCode = userValue.code.toString()
             )
 

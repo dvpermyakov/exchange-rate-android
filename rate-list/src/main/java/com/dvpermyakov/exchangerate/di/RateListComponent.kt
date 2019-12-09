@@ -2,10 +2,10 @@ package com.dvpermyakov.exchangerate.di
 
 import com.dvpermyakov.exchangerate.data.CurrencyRepositoryImpl
 import com.dvpermyakov.exchangerate.data.ExchangeRateApi
-import com.dvpermyakov.exchangerate.data.ExchangeRateRepositoryImpl
+import com.dvpermyakov.exchangerate.data.ExchangeRateGatewayImpl
 import com.dvpermyakov.exchangerate.data.UserInputValueRepositoryImpl
 import com.dvpermyakov.exchangerate.domain.CurrencyRepository
-import com.dvpermyakov.exchangerate.domain.ExchangeRateRepository
+import com.dvpermyakov.exchangerate.domain.ExchangeRateGateway
 import com.dvpermyakov.exchangerate.domain.UserInputValueRepository
 import com.dvpermyakov.exchangerate.presentation.RateListViewModel
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -70,8 +70,8 @@ class RateListModule {
 
     @ScreenScope
     @Provides
-    fun getExchangeRateRepository(api: ExchangeRateApi): ExchangeRateRepository {
-        return ExchangeRateRepositoryImpl(api)
+    fun getExchangeRateGateway(api: ExchangeRateApi): ExchangeRateGateway {
+        return ExchangeRateGatewayImpl(api)
     }
 
     @ScreenScope

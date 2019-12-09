@@ -1,5 +1,5 @@
 package com.dvpermyakov.exchangerate.domain
 
-interface ExchangeRateRepository {
+interface ExchangeRateGateway {
     suspend fun getExchangeRateList(fromCode: String): List<ExchangeRateEntity>
 }
