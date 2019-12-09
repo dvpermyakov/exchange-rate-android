@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dvpermyakov.exchangerate.R
 import com.dvpermyakov.exchangerate.presentation.RateListViewModel
@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.fragment_rate_list.*
 class RateListFragment : Fragment() {
 
     private val viewModel: RateListViewModel by lazy {
-        ViewModelProviders.of(this, RateListViewModelFactory()).get(RateListViewModel::class.java)
+        ViewModelProvider(this, RateListViewModelFactory()).get(RateListViewModel::class.java)
     }
 
     private val adapter by lazy {
