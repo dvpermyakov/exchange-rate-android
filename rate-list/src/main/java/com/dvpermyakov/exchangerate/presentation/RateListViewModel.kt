@@ -5,9 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dvpermyakov.exchangerate.domain.CurrencyCode
-import com.dvpermyakov.exchangerate.interactions.ChangeUserInputValue
-import com.dvpermyakov.exchangerate.interactions.GetRateListSubscription
-import com.dvpermyakov.exchangerate.interactions.SetCurrencyCodeFirst
+import com.dvpermyakov.exchangerate.interactors.ChangeUserInputValue
+import com.dvpermyakov.exchangerate.interactors.GetRateListSubscription
+import com.dvpermyakov.exchangerate.interactors.SetCurrencyCodeFirst
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectIndexed
 import javax.inject.Inject

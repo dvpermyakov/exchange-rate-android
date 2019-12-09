@@ -1,4 +1,4 @@
-package com.dvpermyakov.exchangerate.interactions
+package com.dvpermyakov.exchangerate.interactors
 
 import com.dvpermyakov.exchangerate.data.ExchangeRateCollectionEntity
 import com.dvpermyakov.exchangerate.domain.*
