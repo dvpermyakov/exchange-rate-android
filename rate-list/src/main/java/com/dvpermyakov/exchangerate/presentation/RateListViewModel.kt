@@ -7,13 +7,15 @@ import androidx.lifecycle.viewModelScope
 import com.dvpermyakov.exchangerate.domain.CurrencyCode
 import com.dvpermyakov.exchangerate.interactions.ChangeUserInputValue
 import com.dvpermyakov.exchangerate.interactions.GetRateListSubscription
+import com.dvpermyakov.exchangerate.interactions.SetCurrencyCodeFirst
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectIndexed
 import javax.inject.Inject
 
 class RateListViewModel @Inject constructor(
     private val getRateListSubscription: GetRateListSubscription,
-    private val changeUserInputValue: ChangeUserInputValue
+    private val changeUserInputValue: ChangeUserInputValue,
+    private val setCurrencyCodeFirst: SetCurrencyCodeFirst
 ) : ViewModel() {
 
     private var subscriptionJob: Job? = null
@@ -71,6 +73,9 @@ class RateListViewModel @Inject constructor(
             changeUserInputValue.invoke(
                 currencyCode = CurrencyCode(rateId),
                 value = value.toFloat()
+            )
+            setCurrencyCodeFirst.invoke(
+                code = CurrencyCode(rateId)
             )
         }
         subscriptionJob?.cancel()

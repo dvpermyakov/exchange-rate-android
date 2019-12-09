@@ -1,10 +1,7 @@
 package com.dvpermyakov.exchangerate.di
 
 import com.dvpermyakov.exchangerate.data.*
-import com.dvpermyakov.exchangerate.domain.CurrencyRepository
-import com.dvpermyakov.exchangerate.domain.ExchangeRateGateway
-import com.dvpermyakov.exchangerate.domain.ExchangeRateRepository
-import com.dvpermyakov.exchangerate.domain.UserInputValueRepository
+import com.dvpermyakov.exchangerate.domain.*
 import com.dvpermyakov.exchangerate.presentation.RateListViewModel
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Component
@@ -76,6 +73,12 @@ class RateListModule {
     @Provides
     fun getExchangeRateRepository(): ExchangeRateRepository {
         return ExchangeRateRepositoryImpl()
+    }
+
+    @ScreenScope
+    @Provides
+    fun getCurrencyOrderRepository(): CurrencyOrderRepository {
+        return CurrencyOrderRepositoryImpl()
     }
 
     @ScreenScope

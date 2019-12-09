@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class GetRateListSubscription @Inject constructor(
+    private val currencyOrderRepository: CurrencyOrderRepository,
     private val userInputValueRepository: UserInputValueRepository,
     private val currencyRepository: CurrencyRepository,
     private val exchangeRateGateway: ExchangeRateGateway,
@@ -16,12 +17,14 @@ class GetRateListSubscription @Inject constructor(
     suspend fun invoke(): Flow<Value> = flow {
         while (true) {
 
+            val currencyOrder = currencyOrderRepository.getOrder()
             val userValue = userInputValueRepository.getValue()
             val currencyList = currencyRepository.getCurrencyList()
             val exchangeRateCollection = exchangeRateRepository.getExchangeRateCollection()
             val exchangeRateList = exchangeRateCollection?.list ?: emptyList()
 
             if (currencyList.isNotEmpty() && exchangeRateList.isNotEmpty()) {
+
                 val items = currencyList
                     .map { currency ->
                         Value.RateItem(
@@ -36,13 +39,14 @@ class GetRateListSubscription @Inject constructor(
                         )
                     }
 
-                val selectedRateItem: Value.RateItem = items.first { rateItem ->
-                    rateItem.code == userValue.code
-                }
-
                 val mutableItems = items.toMutableList()
-                mutableItems.remove(selectedRateItem)
-                mutableItems.add(0, selectedRateItem)
+                currencyOrder.asReversed().forEach { currencyCode ->
+                    val selectedRateItem: Value.RateItem = items.first { rateItem ->
+                        rateItem.code == currencyCode
+                    }
+                    mutableItems.remove(selectedRateItem)
+                    mutableItems.add(0, selectedRateItem)
+                }
 
                 emit(Value(items = mutableItems))
             }
