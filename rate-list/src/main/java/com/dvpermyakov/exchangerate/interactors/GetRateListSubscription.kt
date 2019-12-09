@@ -1,66 +1,39 @@
 package com.dvpermyakov.exchangerate.interactors
 
 import com.dvpermyakov.exchangerate.data.ExchangeRateCollectionEntity
-import com.dvpermyakov.exchangerate.domain.*
+import com.dvpermyakov.exchangerate.domain.CurrencyCode
+import com.dvpermyakov.exchangerate.domain.ExchangeRateGateway
+import com.dvpermyakov.exchangerate.domain.ExchangeRateRepository
+import com.dvpermyakov.exchangerate.domain.UserInputValueRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class GetRateListSubscription @Inject constructor(
-    private val currencyOrderRepository: CurrencyOrderRepository,
+    private val computeExchangeRateList: ComputeExchangeRateList,
     private val userInputValueRepository: UserInputValueRepository,
-    private val currencyRepository: CurrencyRepository,
     private val exchangeRateGateway: ExchangeRateGateway,
     private val exchangeRateRepository: ExchangeRateRepository
 ) {
-    suspend fun invoke(): Flow<Value> = flow {
+    fun invoke(): Flow<Value> = flow {
         while (true) {
-
-            val currencyOrder = currencyOrderRepository.getOrder()
-            val userValue = userInputValueRepository.getValue()
-            val currencyList = currencyRepository.getCurrencyList()
-            val exchangeRateCollection = exchangeRateRepository.getExchangeRateCollection()
-
-            if (currencyList.isNotEmpty() && exchangeRateCollection != null) {
-                val exchangeRateList = exchangeRateCollection.list
-
-                val items = currencyList
-                    .map { currency ->
+            when (val result = computeExchangeRateList.invoke()) {
+                is ComputeExchangeRateList.Result.Value -> {
+                    emit(Value(items = result.items.map { item ->
                         Value.RateItem(
-                            image = currency.image,
-                            code = currency.code,
-                            name = currency.name,
-                            value = if (userValue.code == currency.code) {
-                                userValue.value
-                            } else {
-                                if (exchangeRateCollection.fromCode != userValue.code) {
-                                    if (exchangeRateCollection.fromCode == currency.code) {
-                                        userValue.value / exchangeRateList.findValue(userValue.code)
-                                    } else {
-                                        exchangeRateList.findValue(currency.code) * userValue.value / exchangeRateList.findValue(
-                                            userValue.code
-                                        )
-                                    }
-                                } else {
-                                    exchangeRateList.findValue(currency.code) * userValue.value
-                                }
-                            }
+                            image = item.image,
+                            code = item.code,
+                            name = item.name,
+                            value = item.value
                         )
-                    }
-
-                val mutableItems = items.toMutableList()
-                currencyOrder.asReversed().forEach { currencyCode ->
-                    val selectedRateItem: Value.RateItem = items.first { rateItem ->
-                        rateItem.code == currencyCode
-                    }
-                    mutableItems.remove(selectedRateItem)
-                    mutableItems.add(0, selectedRateItem)
+                    }))
                 }
-
-                emit(Value(items = mutableItems))
+                is ComputeExchangeRateList.Result.Empty -> {
+                }
             }
 
+            val userValue = userInputValueRepository.getValue()
             val freshExchangeRateList = exchangeRateGateway.getExchangeRateList(
                 fromCode = userValue.code.toString()
             )
@@ -75,9 +48,6 @@ class GetRateListSubscription @Inject constructor(
         }
     }
 
-    private fun List<ExchangeRateEntity>.findValue(toCode: CurrencyCode): Float {
-        return find { exchangeRate -> exchangeRate.toCode == toCode }?.value ?: 0f
-    }
 
     data class Value(
         val items: List<RateItem>
