@@ -25,16 +25,7 @@ class RateItemEditableViewHolder(
 
     override val containerView: View? = itemView
 
-    fun bind(item: RateListState.RateItem) {
-        if (item.image.isNotBlank()) {
-            Picasso.get()
-                .load(item.image)
-                .into(imageView)
-        }
-        codeView.text = item.code
-        nameView.text = item.name
-
-        valueEditTextView.setText(item.value)
+    init {
         valueEditTextView.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
             }
@@ -46,6 +37,18 @@ class RateItemEditableViewHolder(
                 listener.onValueChange(s.toString())
             }
         })
+    }
+
+    fun bind(item: RateListState.RateItem) {
+        if (item.image.isNotBlank()) {
+            Picasso.get()
+                .load(item.image)
+                .into(imageView)
+        }
+        codeView.text = item.code
+        nameView.text = item.name
+
+        valueEditTextView.setText(item.value)
     }
 
     interface EditableRateListListener {
