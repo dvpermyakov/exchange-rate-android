@@ -53,7 +53,8 @@ class RateListViewModel @Inject constructor(
     }
 
     fun onValueChange(value: String) {
-        ioScope.launch {
+        subscriptionJob?.cancel()
+        subscriptionJob = ioScope.launch {
             try {
                 changeUserInputValue.invoke(
                     value = value.toFloat()
@@ -61,15 +62,13 @@ class RateListViewModel @Inject constructor(
             } catch (ignore: NumberFormatException) {
                 changeUserInputValue.invoke(value = 0f)
             }
-        }
-        subscriptionJob?.cancel()
-        subscriptionJob = ioScope.launch {
             subscribeToRateList(firstSuccessBlock = {})
         }
     }
 
     fun onRateItemClick(rateId: String, value: String) {
-        ioScope.launch {
+        subscriptionJob?.cancel()
+        subscriptionJob = ioScope.launch {
             changeUserInputValue.invoke(
                 currencyCode = CurrencyCode(rateId),
                 value = value.toFloat()
@@ -77,9 +76,6 @@ class RateListViewModel @Inject constructor(
             setCurrencyCodeFirst.invoke(
                 code = CurrencyCode(rateId)
             )
-        }
-        subscriptionJob?.cancel()
-        subscriptionJob = ioScope.launch {
             subscribeToRateList(firstSuccessBlock = {
                 viewModelScope.launch {
                     scrollToFirstPositionMutableLiveData.postValue(true)
