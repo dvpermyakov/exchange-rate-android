@@ -7,7 +7,7 @@ import javax.inject.Inject
 class SetCurrencyCodeFirst @Inject constructor(
     private val repository: CurrencyOrderRepository
 ) {
-    fun invoke(code: CurrencyCode) {
+    suspend fun invoke(code: CurrencyCode) {
         val order = repository.getOrder()
         val filteredOrder = order.filter { currencyCode -> currencyCode != code }
 

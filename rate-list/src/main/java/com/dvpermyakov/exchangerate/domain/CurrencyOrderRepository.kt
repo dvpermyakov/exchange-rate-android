@@ -1,6 +1,6 @@
 package com.dvpermyakov.exchangerate.domain
 
 interface CurrencyOrderRepository {
-    fun getOrder(): List<CurrencyCode>
-    fun setOrder(value: List<CurrencyCode>)
+    suspend fun getOrder(): List<CurrencyCode>
+    suspend fun setOrder(value: List<CurrencyCode>)
 }
