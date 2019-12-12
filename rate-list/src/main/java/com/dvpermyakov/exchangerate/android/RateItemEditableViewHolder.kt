@@ -26,7 +26,7 @@ class RateItemEditableViewHolder(
     override val containerView: View? = itemView
 
     init {
-        valueEditTextView.addTextChangedListener(object : TextWatcher {
+        focusableEditTextView.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
             }
 
@@ -48,7 +48,8 @@ class RateItemEditableViewHolder(
         codeView.text = item.code
         nameView.text = item.name
 
-        valueEditTextView.setText(item.value)
+        focusableEditTextView.setText(item.value)
+        focusableEditTextView.setSelection(item.value.length)
     }
 
     interface EditableRateListListener {
