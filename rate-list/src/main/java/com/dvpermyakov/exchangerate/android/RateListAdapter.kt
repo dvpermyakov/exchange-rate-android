@@ -61,6 +61,17 @@ class RateListAdapter(
         }
     }
 
+    override fun onCurrentListChanged(
+        previousList: MutableList<RateListState.RateItem>,
+        currentList: MutableList<RateListState.RateItem>
+    ) {
+        if (previousList.isNotEmpty() && currentList.isNotEmpty()) {
+            if (previousList.first().id != currentList.first().id) {
+                listener.onFirstItemChange()
+            }
+        }
+    }
+
     private class DiffItemCallback : DiffUtil.ItemCallback<RateListState.RateItem>() {
 
         override fun areItemsTheSame(
@@ -95,7 +106,10 @@ class RateListAdapter(
 
     interface Listener :
         RateItemViewHolder.RateListListener,
-        RateItemEditableViewHolder.EditableRateListListener
+        RateItemEditableViewHolder.EditableRateListListener {
+
+        fun onFirstItemChange()
+    }
 
     companion object {
         private const val VIEW_TYPE_EDITABLE = 1

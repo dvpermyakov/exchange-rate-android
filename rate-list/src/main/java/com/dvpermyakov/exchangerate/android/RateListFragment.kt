@@ -1,13 +1,18 @@
 package com.dvpermyakov.exchangerate.android
 
+import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_DRAGGING
 import com.dvpermyakov.exchangerate.R
 import com.dvpermyakov.exchangerate.presentation.RateListViewModel
 import com.dvpermyakov.exchangerate.presentation.RateListViewModelFactory
@@ -28,6 +33,20 @@ class RateListFragment : Fragment() {
             override fun onValueChange(value: String) {
                 viewModel.onValueChange(value)
             }
+
+            override fun onFirstItemChange() {
+                recyclerView.scrollToPosition(0)
+                recyclerView.postDelayed({
+                    recyclerView.getChildAt(0).run {
+                        val focusableView = findViewById<EditText>(R.id.focusableEditTextView)
+                        focusableView.setSelection(focusableView.text.length)
+                        focusableView.requestFocus()
+                        (context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager).run {
+                            showSoftInput(focusableView, InputMethodManager.SHOW_IMPLICIT)
+                        }
+                    }
+                }, 100)
+            }
         })
     }
 
@@ -45,6 +64,15 @@ class RateListFragment : Fragment() {
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.itemAnimator = null
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                if (newState == SCROLL_STATE_DRAGGING) {
+                    (recyclerView.context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager).run {
+                        hideSoftInputFromWindow(view.windowToken, 0)
+                    }
+                }
+            }
+        })
 
         viewModel.rateListStateLiveData.observe(viewLifecycleOwner, Observer { viewState ->
             adapter.submitList(viewState.items)
@@ -57,16 +85,6 @@ class RateListFragment : Fragment() {
                 progressBarView.visibility = View.GONE
             }
         })
-
-        viewModel.scrollToFirstPositionLiveData.observe(
-            viewLifecycleOwner,
-            Observer { forceScroll ->
-                if (forceScroll) {
-                    recyclerView.post {
-                        recyclerView.smoothScrollToPosition(0)
-                    }
-                }
-            })
     }
 
     companion object {
