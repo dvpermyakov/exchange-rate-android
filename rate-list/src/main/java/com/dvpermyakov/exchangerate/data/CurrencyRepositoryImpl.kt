@@ -51,6 +51,21 @@ class CurrencyRepositoryImpl : CurrencyRepository {
                 image = "file:///android_asset/aud.png",
                 code = CurrencyCode("AUD"),
                 name = "Австралийский доллар"
+            ),
+            CurrencyEntity(
+                image = "file:///android_asset/brl.png",
+                code = CurrencyCode("BRL"),
+                name = "Бразильский реал"
+            ),
+            CurrencyEntity(
+                image = "file:///android_asset/cny.png",
+                code = CurrencyCode("CNY"),
+                name = "Китайский юань"
+            ),
+            CurrencyEntity(
+                image = "file:///android_asset/zar.png",
+                code = CurrencyCode("ZAR"),
+                name = "Южноафриканский рэнд"
             )
         )
     }
