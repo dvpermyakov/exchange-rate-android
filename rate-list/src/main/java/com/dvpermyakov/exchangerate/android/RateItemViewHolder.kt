@@ -36,6 +36,9 @@ class RateItemViewHolder(
         nameView.text = item.name
 
         valueEditTextView.setText(item.value)
+        valueEditTextView.setOnClickListener {
+            listener.onRateItemClick(item.id, valueEditTextView.text.toString())
+        }
     }
 
     fun setValue(value: String) {
