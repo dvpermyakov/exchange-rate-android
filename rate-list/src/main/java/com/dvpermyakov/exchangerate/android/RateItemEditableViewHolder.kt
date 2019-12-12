@@ -49,7 +49,7 @@ class RateItemEditableViewHolder(
         nameView.text = item.name
 
         focusableEditTextView.setText(item.value)
-        focusableEditTextView.setSelection(item.value.length)
+        focusableEditTextView.setSelection(focusableEditTextView.text.length)
     }
 
     interface EditableRateListListener {
