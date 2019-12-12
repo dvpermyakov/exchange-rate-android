@@ -41,17 +41,17 @@ class CurrencyRepositoryImpl : CurrencyRepository {
                 image = "file:///android_asset/czk.png",
                 code = CurrencyCode("CZK"),
                 name = "Чешская крона"
+            ),
+            CurrencyEntity(
+                image = "file:///android_asset/thb.png",
+                code = CurrencyCode("THB"),
+                name = "Тайский бат"
+            ),
+            CurrencyEntity(
+                image = "file:///android_asset/aud.png",
+                code = CurrencyCode("AUD"),
+                name = "Австралийский доллар"
             )
-//            CurrencyEntity(
-//                image = "file:///android_asset/thb.png",
-//                code = CurrencyCode("THB"),
-//                name = "Тайский бат"
-//            ),
-//            CurrencyEntity(
-//                image = "file:///android_asset/aud.png",
-//                code = CurrencyCode("AUD"),
-//                name = "Австралийский доллар"
-//            )
         )
     }
 }
