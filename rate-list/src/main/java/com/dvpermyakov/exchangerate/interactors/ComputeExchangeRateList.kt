@@ -58,8 +58,8 @@ class ComputeExchangeRateList @Inject constructor(
         }
     }
 
-    private fun List<ExchangeRateEntity>.findValue(toCode: CurrencyCode): Float {
-        return find { exchangeRate -> exchangeRate.toCode == toCode }?.value ?: 0f
+    private fun List<ExchangeRateEntity>.findValue(toCode: CurrencyCode): Double {
+        return find { exchangeRate -> exchangeRate.toCode == toCode }?.value ?: 0.toDouble()
     }
 
     sealed class Result {
@@ -70,7 +70,7 @@ class ComputeExchangeRateList @Inject constructor(
                 val image: String,
                 val code: CurrencyCode,
                 val name: String,
-                val value: Float
+                val value: Double
             )
         }
 

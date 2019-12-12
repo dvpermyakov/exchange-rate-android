@@ -8,7 +8,7 @@ import javax.inject.Inject
 class ChangeUserInputValue @Inject constructor(
     private val userInputValueRepository: UserInputValueRepository
 ) {
-    suspend fun invoke(currencyCode: CurrencyCode, value: Float) {
+    suspend fun invoke(currencyCode: CurrencyCode, value: Double) {
         val userInput = UserInputValueEntity(
             code = currencyCode,
             value = value
@@ -16,7 +16,7 @@ class ChangeUserInputValue @Inject constructor(
         userInputValueRepository.setValue(userInput)
     }
 
-    suspend fun invoke(value: Float) {
+    suspend fun invoke(value: Double) {
         val userInput = userInputValueRepository.getValue().copy(
             value = value
         )

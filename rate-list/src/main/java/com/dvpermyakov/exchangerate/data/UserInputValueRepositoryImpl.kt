@@ -11,7 +11,7 @@ class UserInputValueRepositoryImpl : UserInputValueRepository {
 
     private var userInput: UserInputValueEntity = UserInputValueEntity(
         code = CurrencyCode("EUR"),
-        value = 100f
+        value = 100.toDouble()
     )
 
     override suspend fun getValue(): UserInputValueEntity {

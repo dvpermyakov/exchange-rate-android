@@ -18,6 +18,6 @@ interface ExchangeRateApi {
         @SerialName("date")
         val date: String,
         @SerialName("rates")
-        val rates: Map<String, Float>
+        val rates: Map<String, Double>
     )
 }

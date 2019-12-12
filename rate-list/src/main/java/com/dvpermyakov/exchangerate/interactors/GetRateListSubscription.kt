@@ -56,7 +56,7 @@ class GetRateListSubscription @Inject constructor(
             val image: String,
             val code: CurrencyCode,
             val name: String,
-            val value: Float
+            val value: Double
         )
     }
 }

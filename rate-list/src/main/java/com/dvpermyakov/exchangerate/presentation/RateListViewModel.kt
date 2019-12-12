@@ -54,10 +54,10 @@ class RateListViewModel @Inject constructor(
         subscriptionJob = ioScope.launch {
             try {
                 changeUserInputValue.invoke(
-                    value = value.toFloat()
+                    value = value.toDouble()
                 )
             } catch (ignore: NumberFormatException) {
-                changeUserInputValue.invoke(value = 0f)
+                changeUserInputValue.invoke(value = 0.toDouble())
             }
             subscribeToRateList(firstSuccessBlock = {})
         }
@@ -68,7 +68,7 @@ class RateListViewModel @Inject constructor(
         subscriptionJob = ioScope.launch {
             changeUserInputValue.invoke(
                 currencyCode = CurrencyCode(rateId),
-                value = value.toFloat()
+                value = value.toDouble()
             )
             setCurrencyCodeFirst.invoke(
                 code = CurrencyCode(rateId)
