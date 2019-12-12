@@ -25,14 +25,11 @@ class RateListViewModel @Inject constructor(
 
     private val rateListStateMutableLiveData = MutableLiveData<RateListState>()
     private val progressBarMutableLiveData = MutableLiveData<Boolean>()
-    private val scrollToFirstPositionMutableLiveData = MutableLiveData<Boolean>()
 
     val rateListStateLiveData: LiveData<RateListState>
         get() = rateListStateMutableLiveData
     val progressBarLiveData: LiveData<Boolean>
         get() = progressBarMutableLiveData
-    val scrollToFirstPositionLiveData: LiveData<Boolean>
-        get() = scrollToFirstPositionMutableLiveData
 
     init {
         viewModelScope.launch {
@@ -76,11 +73,7 @@ class RateListViewModel @Inject constructor(
             setCurrencyCodeFirst.invoke(
                 code = CurrencyCode(rateId)
             )
-            subscribeToRateList(firstSuccessBlock = {
-                viewModelScope.launch {
-                    scrollToFirstPositionMutableLiveData.postValue(true)
-                }
-            })
+            subscribeToRateList(firstSuccessBlock = {})
         }
     }
 
