@@ -27,6 +27,8 @@ interface RateListComponent {
 
 @Module
 class NetworkModule {
+
+    @ScreenScope
     @Provides
     fun getOkHttpClient(): OkHttpClient {
         return OkHttpClient
@@ -37,6 +39,7 @@ class NetworkModule {
             .build()
     }
 
+    @ScreenScope
     @Provides
     fun getRetrofit(client: OkHttpClient): Retrofit {
         val contentType = "application/json".toMediaType()
