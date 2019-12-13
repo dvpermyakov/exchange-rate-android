@@ -34,15 +34,20 @@ class GetRateListSubscription @Inject constructor(
             }
 
             val userValue = userInputValueRepository.getValue()
-            val freshExchangeRateList = exchangeRateGateway.getExchangeRateList(
+            when (val result = exchangeRateGateway.getExchangeRateList(
                 fromCode = userValue.code.toString()
-            )
-            exchangeRateRepository.saveExchangeRateCollection(
-                ExchangeRateCollectionEntity(
-                    fromCode = userValue.code,
-                    list = freshExchangeRateList
-                )
-            )
+            )) {
+                is ExchangeRateGateway.Response.Success -> {
+                    exchangeRateRepository.saveExchangeRateCollection(
+                        ExchangeRateCollectionEntity(
+                            fromCode = userValue.code,
+                            list = result.list
+                        )
+                    )
+                }
+                is ExchangeRateGateway.Response.Failure -> {
+                }
+            }
 
             delay(1000)
         }
